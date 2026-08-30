@@ -4,456 +4,430 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Impact — Carnet de tir</title>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #14140f;
-    --panel: #1c1c16;
-    --panel-2: #23231b;
-    --border: #35352a;
-    --brass: #bb7f34;
-    --brass-dim: #7d5622;
-    --text: #e8e4d8;
-    --text-dim: #8a8776;
-    --danger: #a63d2f;
+    --bg:#F4F1EA;      --surface:#FBFAF6;
+    --ink:#1B2430;     --ink-2:#5A6472;
+    --gray:#6B7280;    --muted:#8A8677;  --muted-2:#9A9484;
+    --rule:#DCD6C8;    --rule-2:#C9C2B0;
+    --fill:#E4DFD2;    --fill-2:#EFEBE0;
+    --accent:#C0362C;  --accent-hover:#95291F;
+    --scrim:rgba(27,36,48,.34);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{ background:#E7E3D8; -webkit-font-smoothing:antialiased; }
   body{
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Barlow', sans-serif;
-    min-height: 100vh;
-    padding-bottom: 40px;
+    max-width:430px; min-height:100vh; margin:0 auto;
+    background:var(--bg); color:var(--ink);
+    font-family:'Newsreader', Georgia, serif;
+    border-left:1px solid var(--rule); border-right:1px solid var(--rule);
   }
+  input,textarea,button{ font-family:inherit; color:inherit; }
+  input:focus, textarea:focus{ outline:1px solid var(--ink); outline-offset:-1px; }
+
   header{
-    padding: 28px 20px 20px;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-    overflow: hidden;
+    background:var(--surface); border-bottom:1px solid var(--rule);
+    padding:18px 20px 0; position:sticky; top:0; z-index:5;
   }
-  header::before{
-    content:"";
-    position:absolute;
-    top:-40px; right:-40px;
-    width:160px; height:160px;
-    border:1px solid var(--brass-dim);
-    border-radius:50%;
+  .head-row{ display:flex; align-items:center; justify-content:space-between; }
+  .logo{ font:600 14px/1 'IBM Plex Mono',monospace; letter-spacing:.24em; }
+  .roundel{ width:22px; height:22px; border-radius:50%; border:1.5px solid var(--ink);
+    display:flex; align-items:center; justify-content:center; }
+  .roundel i{ width:8px; height:8px; border-radius:50%; background:var(--accent); }
+  .roundel.lg{ width:74px; height:74px; }
+  .roundel.lg .ring2{ position:absolute; width:50px; height:50px; border-radius:50%; border:1px solid var(--rule-2); }
+  .roundel.lg .ring3{ position:absolute; width:26px; height:26px; border-radius:50%; border:1px solid var(--accent); }
+  .roundel.lg i{ width:7px; height:7px; }
+
+  nav{ display:flex; gap:24px; margin-top:18px; }
+  nav div{
+    padding-bottom:11px; cursor:pointer;
+    font:500 12px/1 'IBM Plex Mono',monospace; letter-spacing:.1em;
+    border-bottom:2px solid transparent; color:var(--muted);
   }
-  header::after{
-    content:"";
-    position:absolute;
-    top:-40px; right:-40px;
-    width:160px; height:160px;
-    background:
-      linear-gradient(var(--brass-dim),var(--brass-dim)) center/1px 160px no-repeat,
-      linear-gradient(var(--brass-dim),var(--brass-dim)) center/160px 1px no-repeat;
-    opacity:0.5;
-  }
-  h1{
-    font-family:'Big Shoulders Display', sans-serif;
-    font-weight:800;
-    font-size: 34px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  h1 span{color: var(--brass);}
-  header p{
-    color: var(--text-dim);
-    font-size: 13px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-top: 4px;
-    font-family: 'Barlow Condensed', sans-serif;
-  }
-  nav{
-    display:flex;
-    border-bottom: 1px solid var(--border);
-    background: var(--panel);
-  }
-  nav button{
-    flex:1;
-    padding: 14px 8px;
-    background: none;
-    border:none;
-    color: var(--text-dim);
-    font-family:'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor:pointer;
-    border-bottom: 2px solid transparent;
-  }
-  nav button.active{
-    color: var(--brass);
-    border-bottom: 2px solid var(--brass);
-  }
-  main{ padding: 18px; }
+  nav div.active{ color:var(--ink); border-color:var(--accent); }
+
   .view{ display:none; }
   .view.active{ display:block; }
-  .toolbar{
-    display:flex;
-    justify-content: space-between;
-    align-items:center;
-    margin-bottom: 16px;
+
+  .section-label{
+    padding:16px 20px 10px;
+    font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.16em; color:var(--muted);
   }
-  .toolbar h2{
-    font-family:'Big Shoulders Display', sans-serif;
-    font-size: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+
+  /* ARMES */
+  .arme-row{
+    display:flex; gap:14px; padding:15px 20px; border-top:1px solid var(--rule);
+    align-items:center; cursor:pointer; position:relative;
   }
-  .btn{
-    background: var(--brass);
-    color: #14140f;
-    border:none;
-    padding: 9px 16px;
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    cursor:pointer;
+  .thumb{
+    width:60px; height:60px; flex:none; object-fit:cover;
+    background:repeating-linear-gradient(45deg,var(--fill) 0 4px,var(--fill-2) 4px 8px);
+    display:flex; align-items:center; justify-content:center;
+    font:500 8px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:var(--muted-2);
   }
-  .btn.secondary{
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
+  .arme-row .thumb{ }
+  .arme-info{ flex:1; min-width:0; }
+  .arme-name{ font:500 19px/1.15 'Newsreader',serif; }
+  .arme-sub{ font:400 11px/1 'IBM Plex Mono',monospace; letter-spacing:.08em; color:var(--gray); margin-top:5px; }
+  .arme-count{ text-align:right; }
+  .arme-count .n{ font:500 14px/1 'IBM Plex Mono',monospace; }
+  .arme-count .u{ font:400 9px/1 'IBM Plex Mono',monospace; letter-spacing:.1em; color:var(--muted-2); margin-top:4px; }
+  .del-x{
+    position:absolute; top:8px; right:20px;
+    font:400 14px/1 'IBM Plex Mono',monospace; color:var(--muted-2);
+    cursor:pointer; padding:4px;
   }
-  .grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+  .del-x:hover{ color:var(--accent); }
+  .add-block{ border-top:1px solid var(--rule); padding:22px 20px 28px; }
+  .btn-outline{
+    border:1px solid var(--ink); padding:13px; text-align:center; cursor:pointer;
+    font:500 12px/1 'IBM Plex Mono',monospace; letter-spacing:.12em; background:none;
   }
-  .card{
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 0;
-    overflow:hidden;
-    position:relative;
+  .btn-fill{
+    border:1px solid var(--ink); background:var(--ink); color:var(--bg);
+    padding:13px; text-align:center; cursor:pointer; width:100%;
+    font:500 12px/1 'IBM Plex Mono',monospace; letter-spacing:.12em;
   }
-  .card .photo{
-    width:100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    background: var(--panel-2);
-    display:block;
+
+  /* SEANCES */
+  .seance-row{ display:flex; gap:14px; padding:16px 20px; border-top:1px solid var(--rule); position:relative; }
+  .s-date{ width:46px; flex:none; text-align:center; }
+  .s-date .day{ font:500 21px/1 'IBM Plex Mono',monospace; }
+  .s-date .mon{ font:400 9.5px/1 'IBM Plex Mono',monospace; letter-spacing:.1em; color:var(--muted); margin-top:5px; }
+  .s-photo-wrap{ position:relative; width:82px; height:82px; flex:none; }
+  .s-photo{ width:82px; height:82px; object-fit:cover; cursor:pointer;
+    background:repeating-linear-gradient(45deg,var(--fill) 0 4px,var(--fill-2) 4px 8px);
+    display:flex; align-items:center; justify-content:center;
+    font:500 8px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:var(--muted-2); }
+  .s-photo-count{
+    position:absolute; bottom:4px; right:4px;
+    background:var(--ink); color:var(--bg);
+    font:500 9px/1 'IBM Plex Mono',monospace; padding:3px 5px;
   }
-  .card .photo-placeholder{
-    width:100%;
-    aspect-ratio: 4/3;
-    background: var(--panel-2);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color: var(--text-dim);
-    font-family:'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing:1px;
+  .s-info{ flex:1; min-width:0; }
+  .s-arme{ font:500 16px/1.2 'Newsreader',serif; }
+  .s-score-line{ margin-top:4px; display:flex; align-items:baseline; gap:5px; }
+  .s-score{ font:500 22px/1 'IBM Plex Mono',monospace; color:var(--accent); }
+  .s-scoreof{ font:400 11px/1 'IBM Plex Mono',monospace; color:var(--gray); }
+  .s-extra{ font:400 10.5px/1 'IBM Plex Mono',monospace; letter-spacing:.04em; color:var(--muted); margin-top:4px; }
+  .s-notes{ font:400 13.5px/1.4 'Newsreader',serif; font-style:italic; color:var(--ink-2); margin-top:6px; }
+  .s-del{ position:absolute; top:16px; right:20px; font:400 14px/1 'IBM Plex Mono',monospace; color:var(--muted-2); cursor:pointer; padding:4px; }
+  .s-del:hover{ color:var(--accent); }
+
+  /* HISTORIQUE */
+  .chips{ padding:16px 20px; display:flex; flex-wrap:wrap; gap:8px; border-top:1px solid var(--rule); }
+  .chip{
+    padding:9px 12px; border:1px solid var(--rule); cursor:pointer;
+    font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.05em; color:var(--gray); background:none;
   }
-  .card .body{ padding: 10px 12px 12px; }
-  .card .nom{
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight:600;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .card .meta{
-    color: var(--text-dim);
-    font-size: 12px;
-    margin-top: 2px;
-  }
-  .card .del{
-    position:absolute;
-    top:6px; right:6px;
-    background: rgba(20,20,15,0.8);
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-    width: 24px; height:24px;
-    font-size: 13px;
-    cursor:pointer;
-    line-height:1;
-  }
-  .card .del:hover{ color: var(--danger); border-color: var(--danger); }
-  .seance-card{
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    display:flex;
-    gap: 12px;
-  }
-  .seance-card img{
-    width: 70px; height:70px;
-    object-fit: cover;
-    background: var(--panel-2);
-    flex-shrink:0;
-  }
-  .seance-card .noimg{
-    width: 70px; height:70px;
-    background: var(--panel-2);
-    flex-shrink:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color: var(--text-dim);
-    font-size: 10px;
-    text-align:center;
-  }
-  .seance-card .infos{ flex:1; min-width:0; }
-  .seance-card .top{
-    display:flex;
-    justify-content: space-between;
-    align-items:baseline;
-  }
-  .seance-card .arme{
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight:600;
-    font-size: 15px;
-    text-transform: uppercase;
-    color: var(--brass);
-  }
-  .seance-card .date{ font-size: 12px; color: var(--text-dim); }
-  .seance-card .details{ font-size: 13px; color: var(--text-dim); margin-top:3px; }
-  .seance-card .notes{ font-size: 13px; margin-top: 5px; }
-  .empty{
-    text-align:center;
-    padding: 50px 20px;
-    color: var(--text-dim);
-    font-family:'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  select, input[type=text], input[type=number], input[type=date], textarea{
-    width:100%;
-    background: var(--panel-2);
-    border:1px solid var(--border);
-    color: var(--text);
-    padding: 10px;
-    font-family:'Barlow', sans-serif;
-    font-size: 14px;
-    margin-bottom: 12px;
-  }
-  label{
-    display:block;
-    font-family:'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--text-dim);
-    margin-bottom: 5px;
-  }
-  textarea{ resize:vertical; min-height: 60px; }
-  .modal-bg{
-    display:none;
-    position:fixed; inset:0;
-    background: rgba(0,0,0,0.6);
-    z-index: 50;
-    align-items:flex-end;
-  }
+  .chip.active{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .stat-block{ display:flex; align-items:center; gap:18px; padding:20px; border-top:1px solid var(--rule); }
+  .roundel-stat{ width:74px; height:74px; position:relative; flex:none; }
+  .roundel-stat .r1{ position:absolute; inset:0; border-radius:50%; border:1px solid var(--rule-2); }
+  .roundel-stat .r2{ position:absolute; top:12px; left:12px; right:12px; bottom:12px; border-radius:50%; border:1px solid var(--rule-2); }
+  .roundel-stat .r3{ position:absolute; top:24px; left:24px; right:24px; bottom:24px; border-radius:50%; border:1px solid var(--accent);
+    display:flex; align-items:center; justify-content:center; }
+  .roundel-stat .r3 i{ width:7px; height:7px; border-radius:50%; background:var(--accent); }
+  .stat-label{ font:400 10.5px/1 'IBM Plex Mono',monospace; letter-spacing:.14em; color:var(--muted); }
+  .stat-value{ font:500 38px/1.1 'Newsreader',serif; margin-top:6px; }
+  .stat-value span{ font:400 18px/1 'IBM Plex Mono',monospace; color:var(--gray); }
+  .chrono-title{ padding:16px 20px 4px; font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.16em; color:var(--muted); }
+  .chrono-row{ display:flex; align-items:center; gap:12px; padding:11px 20px; border-top:1px solid var(--rule); }
+  .chrono-date{ width:64px; flex:none; font:400 11.5px/1 'IBM Plex Mono',monospace; color:var(--gray); }
+  .chrono-bar-wrap{ flex:1; height:7px; background:var(--fill); }
+  .chrono-bar{ height:7px; background:var(--ink); }
+  .chrono-bar.best{ background:var(--accent); }
+  .chrono-score{ width:28px; flex:none; text-align:right; font:500 14px/1 'IBM Plex Mono',monospace; }
+  .chrono-note{ padding:14px 20px 22px; font:400 13.5px/1.4 'Newsreader',serif; font-style:italic; color:var(--ink-2); }
+
+  .empty{ text-align:center; padding:50px 20px; color:var(--muted); font:400 13.5px/1.4 'Newsreader',serif; font-style:italic; }
+
+  /* MODAL / SHEET */
+  .modal-bg{ display:none; position:fixed; inset:0; background:var(--scrim); z-index:50; align-items:flex-end; justify-content:center; }
   .modal-bg.active{ display:flex; }
-  .modal{
-    background: var(--panel);
-    border-top: 1px solid var(--brass-dim);
-    width:100%;
-    max-height: 88vh;
-    overflow-y:auto;
-    padding: 20px;
+  .sheet{
+    background:var(--surface); width:100%; max-width:430px; max-height:90vh; overflow-y:auto;
+    padding:20px; border-top:1px solid var(--rule);
   }
-  .modal h3{
-    font-family:'Big Shoulders Display', sans-serif;
-    text-transform: uppercase;
-    font-size: 20px;
-    margin-bottom: 16px;
-    color: var(--brass);
+  .sheet-head{ display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--rule); padding-bottom:14px; margin-bottom:18px; }
+  .sheet-title{ font:500 20px/1 'Newsreader',serif; }
+  .sheet-close{ font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.1em; color:var(--gray); cursor:pointer; }
+  .field{ margin-bottom:16px; }
+  .field-label{ display:block; font:400 10px/1 'IBM Plex Mono',monospace; letter-spacing:.14em; color:var(--muted); margin-bottom:7px; text-transform:uppercase; }
+  .field input[type=text], .field input[type=date], .field input[type=number]{
+    width:100%; background:var(--bg); border:1px solid var(--rule); padding:11px;
+    font:400 13px/1 'IBM Plex Mono',monospace;
   }
-  .photo-upload{
-    border: 1px dashed var(--border);
-    padding: 14px;
-    text-align:center;
-    margin-bottom: 14px;
-    cursor:pointer;
-    color: var(--text-dim);
-    font-family:'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    position:relative;
-    overflow:hidden;
-  }
-  .photo-upload img{
-    max-width:100%; max-height:140px;
-    display:block; margin:0 auto 8px;
+  .field input.serif{ font:400 16px/1 'Newsreader',serif; }
+  .field textarea{
+    width:100%; background:var(--bg); border:1px solid var(--rule); padding:11px; min-height:70px; resize:vertical;
+    font:400 14px/1.4 'Newsreader',serif; font-style:italic;
   }
   .row2{ display:flex; gap:10px; }
   .row2 > div{ flex:1; }
-  .modal-actions{ display:flex; gap:10px; margin-top:6px; }
-  .modal-actions .btn{ flex:1; }
-  .hist-select{ margin-bottom: 16px; }
+  .chip-select{ display:flex; flex-wrap:wrap; gap:8px; }
+  .upload-zone{
+    border:1px dashed var(--rule-2); min-height:96px; padding:14px;
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; cursor:pointer;
+    background:var(--fill-2);
+  }
+  .upload-label{ font:500 12px/1 'IBM Plex Mono',monospace; letter-spacing:.1em; color:var(--muted); text-align:center; width:100%; }
+  .thumb-pending{ position:relative; width:70px; height:70px; }
+  .thumb-pending img{ width:70px; height:70px; object-fit:cover; }
+  .thumb-pending .rm{
+    position:absolute; top:-6px; right:-6px; width:18px; height:18px; background:var(--ink); color:var(--bg);
+    border-radius:50%; display:flex; align-items:center; justify-content:center; font:400 11px/1 'IBM Plex Mono',monospace; cursor:pointer;
+  }
+  .thumb-add{
+    width:70px; height:70px; border:1px dashed var(--rule-2); display:flex; align-items:center; justify-content:center;
+    font:500 20px/1 'IBM Plex Mono',monospace; color:var(--muted); cursor:pointer;
+  }
+
+  /* LIGHTBOX */
+  .lightbox-bg{ display:none; position:fixed; inset:0; background:rgba(20,20,20,.92); z-index:60; align-items:center; justify-content:center; flex-direction:column; }
+  .lightbox-bg.active{ display:flex; }
+  .lightbox-bg img{ max-width:92%; max-height:70vh; object-fit:contain; }
+  .lightbox-nav{ display:flex; gap:24px; align-items:center; margin-top:18px; }
+  .lightbox-nav button{ background:none; border:1px solid #666; color:#eee; padding:8px 14px; font:500 12px/1 'IBM Plex Mono',monospace; cursor:pointer; }
+  .lightbox-close{ position:absolute; top:20px; right:20px; color:#eee; font:500 13px/1 'IBM Plex Mono',monospace; cursor:pointer; letter-spacing:.1em; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1><span>Impact</span></h1>
-  <p>Carnet de tir — armes, séances, progression</p>
+  <div class="head-row">
+    <div class="logo">IMPACT</div>
+    <div class="roundel"><i></i></div>
+  </div>
+  <nav>
+    <div class="active" data-view="armes">ARMES</div>
+    <div data-view="seances">SÉANCES</div>
+    <div data-view="historique">HISTORIQUE</div>
+  </nav>
 </header>
-
-<nav>
-  <button class="active" data-view="armes">Armes</button>
-  <button data-view="seances">Séances</button>
-  <button data-view="historique">Historique</button>
-</nav>
 
 <main>
 
   <!-- ARMES -->
   <section id="view-armes" class="view active">
-    <div class="toolbar">
-      <h2>Mes armes</h2>
-      <button class="btn" onclick="openArmeModal()">+ Ajouter</button>
-    </div>
-    <div id="armes-grid" class="grid"></div>
+    <div class="section-label" id="armes-count-label">0 ARME AU RÂTELIER</div>
+    <div id="armes-list"></div>
     <div id="armes-empty" class="empty">Aucune arme enregistrée pour l'instant.</div>
+    <div class="add-block">
+      <div class="btn-outline" onclick="openArmeModal()">+ AJOUTER UNE ARME</div>
+    </div>
   </section>
 
   <!-- SEANCES -->
   <section id="view-seances" class="view">
-    <div class="toolbar">
-      <h2>Séances</h2>
-      <button class="btn" onclick="openSeanceModal()">+ Nouvelle</button>
-    </div>
+    <div class="section-label" id="seances-count-label">0 SÉANCE ENREGISTRÉE</div>
     <div id="seances-list"></div>
     <div id="seances-empty" class="empty">Aucune séance enregistrée pour l'instant.</div>
+    <div class="add-block">
+      <div class="btn-outline" onclick="openSeanceModal()">+ NOUVELLE SÉANCE</div>
+    </div>
   </section>
 
   <!-- HISTORIQUE -->
   <section id="view-historique" class="view">
-    <div class="toolbar">
-      <h2>Historique par arme</h2>
+    <div id="hist-chips" class="chips"></div>
+    <div id="hist-stat" class="stat-block" style="display:none">
+      <div class="roundel-stat"><div class="r1"></div><div class="r2"></div><div class="r3"><i></i></div></div>
+      <div>
+        <div class="stat-label" id="hist-stat-label">MOYENNE 4 SÉANCES</div>
+        <div class="stat-value"><span id="hist-stat-value">—</span> <span>/100</span></div>
+      </div>
     </div>
-    <div class="hist-select">
-      <label>Sélectionner une arme</label>
-      <select id="hist-arme-select" onchange="renderHistorique()"></select>
-    </div>
-    <div id="hist-list"></div>
-    <div id="hist-empty" class="empty">Sélectionne une arme pour voir son historique.</div>
+    <div class="chrono-title" id="hist-chrono-title" style="display:none">CHRONOLOGIE</div>
+    <div id="hist-chrono"></div>
+    <div id="hist-empty" class="empty">Ajoute une arme pour voir son historique.</div>
   </section>
 
 </main>
 
 <!-- MODAL ARME -->
 <div class="modal-bg" id="modal-arme-bg">
-  <div class="modal">
-    <h3>Nouvelle arme</h3>
-    <label>Photo</label>
-    <div class="photo-upload" id="arme-photo-upload" onclick="document.getElementById('arme-photo-input').click()">
-      <span id="arme-photo-label">Toucher pour ajouter une photo</span>
-      <input type="file" id="arme-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,'arme-photo-upload','arme-photo-label')">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title">Nouvelle arme</div>
+      <div class="sheet-close" onclick="closeModal('modal-arme-bg')">FERMER</div>
     </div>
-    <label>Nom de l'arme</label>
-    <input type="text" id="arme-nom" placeholder="Ex : Carabine 308, Glock 17...">
-    <div class="row2">
-      <div>
-        <label>Calibre</label>
-        <input type="text" id="arme-calibre" placeholder="Ex : .308 Win">
+    <div class="field">
+      <label class="field-label">Photo</label>
+      <div class="upload-zone" id="arme-photo-upload" onclick="document.getElementById('arme-photo-input').click()">
+        <span class="upload-label" id="arme-photo-label">TOUCHER POUR AJOUTER UNE PHOTO</span>
+        <input type="file" id="arme-photo-input" accept="image/*" style="display:none" onchange="previewArmePhoto(this)">
       </div>
-      <div>
-        <label>Catégorie</label>
-        <select id="arme-categorie">
-          <option value="poing">Arme de poing</option>
-          <option value="epaule">Arme d'épaule</option>
-          <option value="longue-distance">Précision / longue distance</option>
+    </div>
+    <div class="field">
+      <label class="field-label">Nom de l'arme</label>
+      <input class="serif" type="text" id="arme-nom" placeholder="Ex : Pardini SP, CZ 457 Varmint...">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label class="field-label">Calibre</label>
+        <input type="text" id="arme-calibre" placeholder=".22 LR">
+      </div>
+      <div class="field">
+        <label class="field-label">Catégorie</label>
+        <select id="arme-categorie" style="width:100%;background:var(--bg);border:1px solid var(--rule);padding:11px;font:400 13px 'IBM Plex Mono',monospace">
+          <option value="poing">PISTOLET</option>
+          <option value="epaule">ARME D'ÉPAULE</option>
+          <option value="longue-distance">PRÉCISION / LONGUE DISTANCE</option>
         </select>
       </div>
     </div>
-    <label>Réglages actuels (hausse, guidon, optique...)</label>
-    <textarea id="arme-reglages" placeholder="Ex : optique réglée à 100m, 3 clics droite..."></textarea>
-    <div class="modal-actions">
-      <button class="btn secondary" onclick="closeModal('modal-arme-bg')">Annuler</button>
-      <button class="btn" onclick="saveArme()">Enregistrer</button>
+    <div class="field">
+      <label class="field-label">Réglages actuels</label>
+      <textarea id="arme-reglages" placeholder="Optique réglée à 100m, 3 clics droite..."></textarea>
     </div>
+    <div class="btn-fill" onclick="saveArme()">ENREGISTRER</div>
   </div>
 </div>
 
 <!-- MODAL SEANCE -->
 <div class="modal-bg" id="modal-seance-bg">
-  <div class="modal">
-    <h3>Nouvelle séance</h3>
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title">Nouvelle séance</div>
+      <div class="sheet-close" onclick="closeModal('modal-seance-bg')">FERMER</div>
+    </div>
+    <div class="field">
+      <label class="field-label">Arme</label>
+      <div class="chip-select" id="seance-arme-chips"></div>
+    </div>
     <div class="row2">
-      <div>
-        <label>Date</label>
+      <div class="field">
+        <label class="field-label">Date</label>
         <input type="date" id="seance-date">
       </div>
-      <div>
-        <label>Distance</label>
-        <input type="text" id="seance-distance" placeholder="Ex : 100m">
+      <div class="field">
+        <label class="field-label">Dist.</label>
+        <input type="text" id="seance-distance" placeholder="25 m">
+      </div>
+      <div class="field">
+        <label class="field-label">Score</label>
+        <input type="number" id="seance-score" placeholder="/100" min="0" max="100">
       </div>
     </div>
-    <label>Arme utilisée</label>
-    <select id="seance-arme"></select>
-    <label>Munition</label>
-    <input type="text" id="seance-munition" placeholder="Ex : 168gr HPBT">
-    <label>Conditions</label>
-    <input type="text" id="seance-conditions" placeholder="Ex : vent 10km/h, sec, 15°C">
-    <label>Photo de la cible</label>
-    <div class="photo-upload" id="seance-photo-upload" onclick="document.getElementById('seance-photo-input').click()">
-      <span id="seance-photo-label">Toucher pour ajouter une photo</span>
-      <input type="file" id="seance-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,'seance-photo-upload','seance-photo-label')">
+    <div class="row2">
+      <div class="field">
+        <label class="field-label">Munition</label>
+        <input type="text" id="seance-munition" placeholder="168gr HPBT">
+      </div>
+      <div class="field">
+        <label class="field-label">Coups tirés</label>
+        <input type="number" id="seance-coups" placeholder="Ex : 40" min="0">
+      </div>
     </div>
-    <label>Notes (groupement, ressenti...)</label>
-    <textarea id="seance-notes" placeholder="Ex : groupement 2cm, léger décalage droite..."></textarea>
-    <div class="modal-actions">
-      <button class="btn secondary" onclick="closeModal('modal-seance-bg')">Annuler</button>
-      <button class="btn" onclick="saveSeance()">Enregistrer</button>
+    <div class="field">
+      <label class="field-label">Conditions</label>
+      <input type="text" id="seance-conditions" placeholder="Vent 10km/h, sec, 15°C">
     </div>
+    <div class="field">
+      <label class="field-label">Photos de cible</label>
+      <div class="upload-zone" id="seance-photo-zone">
+        <span class="upload-label" id="seance-photo-label">TOUCHER POUR AJOUTER DES PHOTOS</span>
+      </div>
+      <input type="file" id="seance-photo-input" accept="image/*" multiple style="display:none" onchange="addSeancePhotos(this)">
+    </div>
+    <div class="field">
+      <label class="field-label">Notes</label>
+      <textarea id="seance-notes" placeholder="Groupement, réglages, munitions..."></textarea>
+    </div>
+    <div class="btn-fill" onclick="saveSeance()">ENREGISTRER LA SÉANCE</div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-bg" id="lightbox-bg">
+  <div class="lightbox-close" onclick="closeLightbox()">FERMER ✕</div>
+  <img id="lightbox-img" src="">
+  <div class="lightbox-nav">
+    <button onclick="lightboxPrev()">‹ PRÉC.</button>
+    <span id="lightbox-count" style="color:#ccc;font:400 11px 'IBM Plex Mono',monospace;"></span>
+    <button onclick="lightboxNext()">SUIV. ›</button>
   </div>
 </div>
 
 <script>
 // ---------- STOCKAGE ----------
 function loadData(){
-  try{
-    return JSON.parse(localStorage.getItem('pdi_data')) || {armes:[], seances:[]};
-  }catch(e){ return {armes:[], seances:[]}; }
+  try{ return JSON.parse(localStorage.getItem('pdi_data')) || {armes:[], seances:[]}; }
+  catch(e){ return {armes:[], seances:[]}; }
 }
-function saveData(){
-  localStorage.setItem('pdi_data', JSON.stringify(data));
-}
+function saveData(){ localStorage.setItem('pdi_data', JSON.stringify(data)); }
 let data = loadData();
+// migration douce : anciennes séances avec 'photo' unique -> tableau 'photos'
+data.seances.forEach(s=>{
+  if(s.photo && !s.photos){ s.photos = [s.photo]; delete s.photo; }
+  if(!s.photos) s.photos = [];
+});
+
+const catLabels = {poing:'PISTOLET', epaule:"ARME D'ÉPAULE", 'longue-distance':'PRÉCISION / LD'};
+const moisAbrev = ['JANV.','FÉVR.','MARS','AVR.','MAI','JUIN','JUIL.','AOÛT','SEPT.','OCT.','NOV.','DÉC.'];
 
 // ---------- NAVIGATION ----------
-document.querySelectorAll('nav button').forEach(btn=>{
+document.querySelectorAll('nav div').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('nav div').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('view-'+btn.dataset.view).classList.add('active');
     if(btn.dataset.view==='seances') renderSeances();
-    if(btn.dataset.view==='historique') { populateHistSelect(); renderHistorique(); }
+    if(btn.dataset.view==='historique') renderHistorique();
   });
 });
 
-// ---------- PHOTO PREVIEW (upload générique) ----------
+// ---------- PHOTO ARME (unique) ----------
 let pendingArmePhoto = null;
-let pendingSeancePhoto = null;
-function previewPhoto(input, uploadId, labelId){
-  const file = input.files[0];
-  if(!file) return;
+function previewArmePhoto(input){
+  const file = input.files[0]; if(!file) return;
   const reader = new FileReader();
-  reader.onload = function(e){
-    const dataUrl = e.target.result;
-    if(uploadId==='arme-photo-upload') pendingArmePhoto = dataUrl;
-    if(uploadId==='seance-photo-upload') pendingSeancePhoto = dataUrl;
-    const uploadEl = document.getElementById(uploadId);
-    uploadEl.innerHTML = '<img src="'+dataUrl+'"><span>Photo sélectionnée — toucher pour changer</span>' +
-      '<input type="file" id="'+input.id+'" accept="image/*" style="display:none" onchange="previewPhoto(this,\''+uploadId+'\',\''+labelId+'\')">';
+  reader.onload = e=>{
+    pendingArmePhoto = e.target.result;
+    document.getElementById('arme-photo-upload').innerHTML =
+      '<img src="'+pendingArmePhoto+'" style="max-width:100%;max-height:120px;">';
   };
   reader.readAsDataURL(file);
 }
+
+// ---------- PHOTOS SEANCE (multiples) ----------
+let pendingSeancePhotos = [];
+function renderSeanceUploadZone(){
+  const zone = document.getElementById('seance-photo-zone');
+  let html = '';
+  pendingSeancePhotos.forEach((p,i)=>{
+    html += '<div class="thumb-pending"><img src="'+p+'"><div class="rm" onclick="event.stopPropagation();removePendingPhoto('+i+')">✕</div></div>';
+  });
+  html += '<div class="thumb-add" onclick="document.getElementById(\'seance-photo-input\').click()">+</div>';
+  if(pendingSeancePhotos.length===0){
+    zone.innerHTML = '<span class="upload-label">TOUCHER POUR AJOUTER DES PHOTOS</span>';
+    zone.onclick = ()=>document.getElementById('seance-photo-input').click();
+  } else {
+    zone.innerHTML = html;
+    zone.onclick = null;
+  }
+}
+function addSeancePhotos(input){
+  const files = Array.from(input.files || []);
+  let remaining = files.length;
+  if(remaining===0) return;
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e=>{
+      pendingSeancePhotos.push(e.target.result);
+      renderSeanceUploadZone();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+function removePendingPhoto(i){ pendingSeancePhotos.splice(i,1); renderSeanceUploadZone(); }
 
 // ---------- MODALS ----------
 function openArmeModal(){
@@ -462,25 +436,33 @@ function openArmeModal(){
   document.getElementById('arme-calibre').value='';
   document.getElementById('arme-categorie').value='poing';
   document.getElementById('arme-reglages').value='';
-  document.getElementById('arme-photo-upload').innerHTML =
-    '<span id="arme-photo-label">Toucher pour ajouter une photo</span>' +
-    '<input type="file" id="arme-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,\'arme-photo-upload\',\'arme-photo-label\')">';
+  document.getElementById('arme-photo-upload').innerHTML = '<span class="upload-label" id="arme-photo-label">TOUCHER POUR AJOUTER UNE PHOTO</span>';
   document.getElementById('modal-arme-bg').classList.add('active');
 }
+let selectedSeanceArme = null;
 function openSeanceModal(){
   if(data.armes.length===0){ alert("Ajoute d'abord une arme avant de créer une séance."); return; }
-  pendingSeancePhoto = null;
+  pendingSeancePhotos = [];
+  renderSeanceUploadZone();
   document.getElementById('seance-date').value = new Date().toISOString().slice(0,10);
   document.getElementById('seance-distance').value='';
+  document.getElementById('seance-score').value='';
   document.getElementById('seance-munition').value='';
+  document.getElementById('seance-coups').value='';
   document.getElementById('seance-conditions').value='';
   document.getElementById('seance-notes').value='';
-  document.getElementById('seance-photo-upload').innerHTML =
-    '<span id="seance-photo-label">Toucher pour ajouter une photo</span>' +
-    '<input type="file" id="seance-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,\'seance-photo-upload\',\'seance-photo-label\')">';
-  const sel = document.getElementById('seance-arme');
-  sel.innerHTML = data.armes.map(a=>'<option value="'+a.id+'">'+escapeHtml(a.nom)+'</option>').join('');
+  selectedSeanceArme = data.armes[0].id;
+  const chips = document.getElementById('seance-arme-chips');
+  chips.innerHTML = data.armes.map(a=>
+    '<button type="button" class="chip'+(a.id===selectedSeanceArme?' active':'')+'" onclick="pickSeanceArme(\''+a.id+'\')">'+escapeHtml(a.nom.toUpperCase())+'</button>'
+  ).join('');
   document.getElementById('modal-seance-bg').classList.add('active');
+}
+function pickSeanceArme(id){
+  selectedSeanceArme = id;
+  document.querySelectorAll('#seance-arme-chips .chip').forEach(c=>c.classList.remove('active'));
+  const idx = data.armes.findIndex(a=>a.id===id);
+  document.querySelectorAll('#seance-arme-chips .chip')[idx].classList.add('active');
 }
 function closeModal(id){ document.getElementById(id).classList.remove('active'); }
 
@@ -489,32 +471,29 @@ function saveArme(){
   const nom = document.getElementById('arme-nom').value.trim();
   if(!nom){ alert('Indique un nom pour cette arme.'); return; }
   data.armes.push({
-    id: 'a_'+Date.now(),
-    nom: nom,
-    calibre: document.getElementById('arme-calibre').value.trim(),
-    categorie: document.getElementById('arme-categorie').value,
-    reglages: document.getElementById('arme-reglages').value.trim(),
-    photo: pendingArmePhoto
+    id:'a_'+Date.now(),
+    nom:nom,
+    calibre:document.getElementById('arme-calibre').value.trim(),
+    categorie:document.getElementById('arme-categorie').value,
+    reglages:document.getElementById('arme-reglages').value.trim(),
+    photo:pendingArmePhoto
   });
-  saveData();
-  closeModal('modal-arme-bg');
-  renderArmes();
+  saveData(); closeModal('modal-arme-bg'); renderArmes();
 }
 function saveSeance(){
-  const armeId = document.getElementById('seance-arme').value;
   data.seances.push({
-    id: 's_'+Date.now(),
-    date: document.getElementById('seance-date').value,
-    armeId: armeId,
-    distance: document.getElementById('seance-distance').value.trim(),
-    munition: document.getElementById('seance-munition').value.trim(),
-    conditions: document.getElementById('seance-conditions').value.trim(),
-    notes: document.getElementById('seance-notes').value.trim(),
-    photo: pendingSeancePhoto
+    id:'s_'+Date.now(),
+    date:document.getElementById('seance-date').value,
+    armeId:selectedSeanceArme,
+    distance:document.getElementById('seance-distance').value.trim(),
+    score:document.getElementById('seance-score').value ? Number(document.getElementById('seance-score').value) : null,
+    munition:document.getElementById('seance-munition').value.trim(),
+    coups:document.getElementById('seance-coups').value ? Number(document.getElementById('seance-coups').value) : null,
+    conditions:document.getElementById('seance-conditions').value.trim(),
+    notes:document.getElementById('seance-notes').value.trim(),
+    photos: pendingSeancePhotos.slice()
   });
-  saveData();
-  closeModal('modal-seance-bg');
-  renderSeances();
+  saveData(); closeModal('modal-seance-bg'); renderSeances();
 }
 
 // ---------- DELETE ----------
@@ -522,111 +501,154 @@ function deleteArme(id){
   if(!confirm('Supprimer cette arme et toutes ses séances associées ?')) return;
   data.armes = data.armes.filter(a=>a.id!==id);
   data.seances = data.seances.filter(s=>s.armeId!==id);
-  saveData();
-  renderArmes();
+  saveData(); renderArmes();
 }
 function deleteSeance(id){
   if(!confirm('Supprimer cette séance ?')) return;
   data.seances = data.seances.filter(s=>s.id!==id);
-  saveData();
-  renderSeances();
+  saveData(); renderSeances();
 }
 
-// ---------- RENDER ----------
-const catLabels = {poing:'Arme de poing', epaule:"Arme d'épaule", 'longue-distance':'Précision / longue distance'};
-
+// ---------- RENDER ARMES ----------
 function renderArmes(){
-  const grid = document.getElementById('armes-grid');
+  const list = document.getElementById('armes-list');
   const empty = document.getElementById('armes-empty');
-  if(data.armes.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
+  const label = document.getElementById('armes-count-label');
+  label.textContent = data.armes.length + (data.armes.length>1 ? ' ARMES AU RÂTELIER' : ' ARME AU RÂTELIER');
+  if(data.armes.length===0){ list.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
-  grid.innerHTML = data.armes.map(a=>`
-    <div class="card">
-      <button class="del" onclick="deleteArme('${a.id}')">✕</button>
-      ${a.photo ? '<img class="photo" src="'+a.photo+'">' : '<div class="photo-placeholder">Pas de photo</div>'}
-      <div class="body">
-        <div class="nom">${escapeHtml(a.nom)}</div>
-        <div class="meta">${escapeHtml(a.calibre||'—')} · ${catLabels[a.categorie]}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderSeances(){
-  const list = document.getElementById('seances-list');
-  const empty = document.getElementById('seances-empty');
-  const sorted = [...data.seances].sort((a,b)=> b.date.localeCompare(a.date));
-  if(sorted.length===0){ list.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  list.innerHTML = sorted.map(s=>{
-    const arme = data.armes.find(a=>a.id===s.armeId);
+  list.innerHTML = data.armes.map(a=>{
+    const coups = data.seances.filter(s=>s.armeId===a.id).reduce((sum,s)=> sum + (s.coups||0), 0);
     return `
-    <div class="seance-card">
-      ${s.photo ? '<img src="'+s.photo+'">' : '<div class="noimg">Pas de photo</div>'}
-      <div class="infos">
-        <div class="top">
-          <span class="arme">${arme ? escapeHtml(arme.nom) : 'Arme supprimée'}</span>
-          <span class="date">${formatDate(s.date)}</span>
-        </div>
-        <div class="details">${escapeHtml(s.distance||'—')} ${s.munition ? '· '+escapeHtml(s.munition) : ''} ${s.conditions ? '· '+escapeHtml(s.conditions) : ''}</div>
-        ${s.notes ? '<div class="notes">'+escapeHtml(s.notes)+'</div>' : ''}
+    <div class="arme-row">
+      <div class="del-x" onclick="event.stopPropagation();deleteArme('${a.id}')">✕</div>
+      ${a.photo ? '<img class="thumb" src="'+a.photo+'">' : '<div class="thumb">PHOTO</div>'}
+      <div class="arme-info">
+        <div class="arme-name">${escapeHtml(a.nom)}</div>
+        <div class="arme-sub">${escapeHtml(a.calibre||'—')} · ${catLabels[a.categorie]}</div>
       </div>
-      <button class="del" style="position:static; align-self:flex-start;" onclick="deleteSeance('${s.id}')">✕</button>
+      ${coups>0 ? '<div class="arme-count"><div class="n">'+coups.toLocaleString('fr-FR')+'</div><div class="u">COUPS</div></div>' : ''}
     </div>`;
   }).join('');
 }
 
-function populateHistSelect(){
-  const sel = document.getElementById('hist-arme-select');
-  const current = sel.value;
-  sel.innerHTML = data.armes.map(a=>'<option value="'+a.id+'">'+escapeHtml(a.nom)+'</option>').join('');
-  if(current) sel.value = current;
+// ---------- RENDER SEANCES ----------
+let currentLightboxPhotos = []; let currentLightboxIndex = 0;
+function openLightbox(photosJson, index){
+  currentLightboxPhotos = JSON.parse(photosJson);
+  currentLightboxIndex = index;
+  updateLightbox();
+  document.getElementById('lightbox-bg').classList.add('active');
 }
+function updateLightbox(){
+  document.getElementById('lightbox-img').src = currentLightboxPhotos[currentLightboxIndex];
+  document.getElementById('lightbox-count').textContent = (currentLightboxIndex+1)+' / '+currentLightboxPhotos.length;
+}
+function lightboxPrev(){ currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxPhotos.length) % currentLightboxPhotos.length; updateLightbox(); }
+function lightboxNext(){ currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxPhotos.length; updateLightbox(); }
+function closeLightbox(){ document.getElementById('lightbox-bg').classList.remove('active'); }
 
-function renderHistorique(){
-  const sel = document.getElementById('hist-arme-select');
-  const list = document.getElementById('hist-list');
-  const empty = document.getElementById('hist-empty');
-  if(data.armes.length===0 || !sel.value){ list.innerHTML=''; empty.style.display='block'; return; }
-  const armeId = sel.value;
-  const arme = data.armes.find(a=>a.id===armeId);
-  const seances = data.seances.filter(s=>s.armeId===armeId).sort((a,b)=> b.date.localeCompare(a.date));
-  let html = '';
-  if(arme && arme.reglages){
-    html += `<div class="seance-card"><div class="infos"><div class="arme" style="margin-bottom:4px;">Réglages actuels</div><div class="notes">${escapeHtml(arme.reglages)}</div></div></div>`;
-  }
-  if(seances.length===0){
-    empty.style.display='block';
-    empty.textContent = 'Aucune séance enregistrée pour cette arme.';
-    list.innerHTML = html;
-    return;
-  }
+function renderSeances(){
+  const list = document.getElementById('seances-list');
+  const empty = document.getElementById('seances-empty');
+  const label = document.getElementById('seances-count-label');
+  const sorted = [...data.seances].sort((a,b)=> b.date.localeCompare(a.date));
+  label.textContent = sorted.length + (sorted.length>1 ? ' SÉANCES ENREGISTRÉES' : ' SÉANCE ENREGISTRÉE');
+  if(sorted.length===0){ list.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
-  html += seances.map(s=>`
-    <div class="seance-card">
-      ${s.photo ? '<img src="'+s.photo+'">' : '<div class="noimg">Pas de photo</div>'}
-      <div class="infos">
-        <div class="top">
-          <span class="date">${formatDate(s.date)}</span>
+  list.innerHTML = sorted.map(s=>{
+    const arme = data.armes.find(a=>a.id===s.armeId);
+    const d = parseDate(s.date);
+    const photosJson = escapeAttr(JSON.stringify(s.photos||[]));
+    let photoHtml = '<div class="s-photo">CIBLE</div>';
+    if(s.photos && s.photos.length>0){
+      photoHtml = '<div class="s-photo-wrap"><img class="s-photo" src="'+s.photos[0]+'" onclick=\'openLightbox("'+photosJson+'",0)\'>' +
+        (s.photos.length>1 ? '<div class="s-photo-count">+'+(s.photos.length-1)+'</div>' : '') + '</div>';
+    }
+    let extra = [];
+    if(s.munition) extra.push(escapeHtml(s.munition));
+    if(s.coups) extra.push(s.coups+' coups');
+    if(s.conditions) extra.push(escapeHtml(s.conditions));
+    return `
+    <div class="seance-row">
+      <div class="s-del" onclick="deleteSeance('${s.id}')">✕</div>
+      <div class="s-date"><div class="day">${d.day}</div><div class="mon">${d.mon}</div></div>
+      ${photoHtml}
+      <div class="s-info">
+        <div class="s-arme">${arme ? escapeHtml(arme.nom) : 'Arme supprimée'}</div>
+        <div class="s-score-line">
+          ${s.score!=null ? '<span class="s-score">'+s.score+'</span><span class="s-scoreof">/100</span>' : ''}
+          ${s.distance ? '<span class="s-scoreof">· '+escapeHtml(s.distance)+'</span>' : ''}
         </div>
-        <div class="details">${escapeHtml(s.distance||'—')} ${s.munition ? '· '+escapeHtml(s.munition) : ''} ${s.conditions ? '· '+escapeHtml(s.conditions) : ''}</div>
-        ${s.notes ? '<div class="notes">'+escapeHtml(s.notes)+'</div>' : ''}
+        ${extra.length ? '<div class="s-extra">'+extra.join(' · ')+'</div>' : ''}
+        ${s.notes ? '<div class="s-notes">'+escapeHtml(s.notes)+'</div>' : ''}
       </div>
-    </div>
-  `).join('');
-  list.innerHTML = html;
+    </div>`;
+  }).join('');
 }
 
-function formatDate(d){
-  if(!d) return '';
-  const parts = d.split('-');
-  return parts.length===3 ? parts[2]+'/'+parts[1]+'/'+parts[0] : d;
+// ---------- RENDER HISTORIQUE ----------
+let histSelectedArme = null;
+function renderHistorique(){
+  const chipsEl = document.getElementById('hist-chips');
+  const statEl = document.getElementById('hist-stat');
+  const chronoTitle = document.getElementById('hist-chrono-title');
+  const chronoEl = document.getElementById('hist-chrono');
+  const emptyEl = document.getElementById('hist-empty');
+
+  if(data.armes.length===0){
+    chipsEl.innerHTML=''; statEl.style.display='none'; chronoTitle.style.display='none'; chronoEl.innerHTML='';
+    emptyEl.style.display='block'; return;
+  }
+  if(!histSelectedArme || !data.armes.find(a=>a.id===histSelectedArme)) histSelectedArme = data.armes[0].id;
+  emptyEl.style.display='none';
+
+  chipsEl.innerHTML = data.armes.map(a=>
+    '<button type="button" class="chip'+(a.id===histSelectedArme?' active':'')+'" onclick="pickHistArme(\''+a.id+'\')">'+escapeHtml(a.nom.toUpperCase())+'</button>'
+  ).join('');
+
+  const seances = data.seances.filter(s=>s.armeId===histSelectedArme).sort((a,b)=> b.date.localeCompare(a.date));
+  const withScore = seances.filter(s=>s.score!=null);
+  const last4 = withScore.slice(0,4);
+
+  if(last4.length>0){
+    statEl.style.display='flex';
+    const avg = (last4.reduce((sum,s)=>sum+s.score,0)/last4.length);
+    document.getElementById('hist-stat-label').textContent = 'MOYENNE '+last4.length+(last4.length>1?' SÉANCES':' SÉANCE');
+    document.getElementById('hist-stat-value').textContent = avg.toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
+  } else {
+    statEl.style.display='none';
+  }
+
+  const last8 = withScore.slice(0,8);
+  if(last8.length>0){
+    chronoTitle.style.display='block';
+    const best = Math.max(...last8.map(s=>s.score));
+    chronoEl.innerHTML = last8.map(s=>{
+      const d = parseDate(s.date);
+      const isBest = s.score===best;
+      return `
+      <div class="chrono-row">
+        <div class="chrono-date">${d.day}.${d.monNum}.${d.yr}</div>
+        <div class="chrono-bar-wrap"><div class="chrono-bar${isBest?' best':''}" style="width:${s.score}%"></div></div>
+        <div class="chrono-score">${s.score}</div>
+      </div>`;
+    }).join('') + '<div class="chrono-note">Le trait rouge marque la meilleure série avec cette arme.</div>';
+  } else {
+    chronoTitle.style.display='none';
+    chronoEl.innerHTML = '<div class="empty">Aucune séance avec score pour cette arme.</div>';
+  }
 }
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str || '';
-  return div.innerHTML;
+function pickHistArme(id){ histSelectedArme = id; renderHistorique(); }
+
+// ---------- UTILS ----------
+function parseDate(dstr){
+  if(!dstr) return {day:'--',mon:'',monNum:'--',yr:'--'};
+  const [y,m,d] = dstr.split('-');
+  return { day:d, mon:moisAbrev[parseInt(m,10)-1], monNum:m, yr:y.slice(2) };
 }
+function escapeHtml(str){ const div=document.createElement('div'); div.textContent = str||''; return div.innerHTML; }
+function escapeAttr(str){ return (str||'').replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
 
 // ---------- INIT ----------
 renderArmes();
