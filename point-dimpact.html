@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impact — Carnet de tir</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14140f;
+    --panel: #1c1c16;
+    --panel-2: #23231b;
+    --border: #35352a;
+    --brass: #bb7f34;
+    --brass-dim: #7d5622;
+    --text: #e8e4d8;
+    --text-dim: #8a8776;
+    --danger: #a63d2f;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  header{
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute;
+    top:-40px; right:-40px;
+    width:160px; height:160px;
+    border:1px solid var(--brass-dim);
+    border-radius:50%;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    top:-40px; right:-40px;
+    width:160px; height:160px;
+    background:
+      linear-gradient(var(--brass-dim),var(--brass-dim)) center/1px 160px no-repeat,
+      linear-gradient(var(--brass-dim),var(--brass-dim)) center/160px 1px no-repeat;
+    opacity:0.5;
+  }
+  h1{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800;
+    font-size: 34px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  h1 span{color: var(--brass);}
+  header p{
+    color: var(--text-dim);
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  nav{
+    display:flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  nav button{
+    flex:1;
+    padding: 14px 8px;
+    background: none;
+    border:none;
+    color: var(--text-dim);
+    font-family:'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor:pointer;
+    border-bottom: 2px solid transparent;
+  }
+  nav button.active{
+    color: var(--brass);
+    border-bottom: 2px solid var(--brass);
+  }
+  main{ padding: 18px; }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .toolbar{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    margin-bottom: 16px;
+  }
+  .toolbar h2{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .btn{
+    background: var(--brass);
+    color: #14140f;
+    border:none;
+    padding: 9px 16px;
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor:pointer;
+  }
+  .btn.secondary{
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 0;
+    overflow:hidden;
+    position:relative;
+  }
+  .card .photo{
+    width:100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: var(--panel-2);
+    display:block;
+  }
+  .card .photo-placeholder{
+    width:100%;
+    aspect-ratio: 4/3;
+    background: var(--panel-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--text-dim);
+    font-family:'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing:1px;
+  }
+  .card .body{ padding: 10px 12px 12px; }
+  .card .nom{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:600;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .card .meta{
+    color: var(--text-dim);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .card .del{
+    position:absolute;
+    top:6px; right:6px;
+    background: rgba(20,20,15,0.8);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    width: 24px; height:24px;
+    font-size: 13px;
+    cursor:pointer;
+    line-height:1;
+  }
+  .card .del:hover{ color: var(--danger); border-color: var(--danger); }
+  .seance-card{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display:flex;
+    gap: 12px;
+  }
+  .seance-card img{
+    width: 70px; height:70px;
+    object-fit: cover;
+    background: var(--panel-2);
+    flex-shrink:0;
+  }
+  .seance-card .noimg{
+    width: 70px; height:70px;
+    background: var(--panel-2);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--text-dim);
+    font-size: 10px;
+    text-align:center;
+  }
+  .seance-card .infos{ flex:1; min-width:0; }
+  .seance-card .top{
+    display:flex;
+    justify-content: space-between;
+    align-items:baseline;
+  }
+  .seance-card .arme{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:600;
+    font-size: 15px;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .seance-card .date{ font-size: 12px; color: var(--text-dim); }
+  .seance-card .details{ font-size: 13px; color: var(--text-dim); margin-top:3px; }
+  .seance-card .notes{ font-size: 13px; margin-top: 5px; }
+  .empty{
+    text-align:center;
+    padding: 50px 20px;
+    color: var(--text-dim);
+    font-family:'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  select, input[type=text], input[type=number], input[type=date], textarea{
+    width:100%;
+    background: var(--panel-2);
+    border:1px solid var(--border);
+    color: var(--text);
+    padding: 10px;
+    font-family:'Barlow', sans-serif;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  label{
+    display:block;
+    font-family:'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+  }
+  textarea{ resize:vertical; min-height: 60px; }
+  .modal-bg{
+    display:none;
+    position:fixed; inset:0;
+    background: rgba(0,0,0,0.6);
+    z-index: 50;
+    align-items:flex-end;
+  }
+  .modal-bg.active{ display:flex; }
+  .modal{
+    background: var(--panel);
+    border-top: 1px solid var(--brass-dim);
+    width:100%;
+    max-height: 88vh;
+    overflow-y:auto;
+    padding: 20px;
+  }
+  .modal h3{
+    font-family:'Big Shoulders Display', sans-serif;
+    text-transform: uppercase;
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: var(--brass);
+  }
+  .photo-upload{
+    border: 1px dashed var(--border);
+    padding: 14px;
+    text-align:center;
+    margin-bottom: 14px;
+    cursor:pointer;
+    color: var(--text-dim);
+    font-family:'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position:relative;
+    overflow:hidden;
+  }
+  .photo-upload img{
+    max-width:100%; max-height:140px;
+    display:block; margin:0 auto 8px;
+  }
+  .row2{ display:flex; gap:10px; }
+  .row2 > div{ flex:1; }
+  .modal-actions{ display:flex; gap:10px; margin-top:6px; }
+  .modal-actions .btn{ flex:1; }
+  .hist-select{ margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>Impact</span></h1>
+  <p>Carnet de tir — armes, séances, progression</p>
+</header>
+
+<nav>
+  <button class="active" data-view="armes">Armes</button>
+  <button data-view="seances">Séances</button>
+  <button data-view="historique">Historique</button>
+</nav>
+
+<main>
+
+  <!-- ARMES -->
+  <section id="view-armes" class="view active">
+    <div class="toolbar">
+      <h2>Mes armes</h2>
+      <button class="btn" onclick="openArmeModal()">+ Ajouter</button>
+    </div>
+    <div id="armes-grid" class="grid"></div>
+    <div id="armes-empty" class="empty">Aucune arme enregistrée pour l'instant.</div>
+  </section>
+
+  <!-- SEANCES -->
+  <section id="view-seances" class="view">
+    <div class="toolbar">
+      <h2>Séances</h2>
+      <button class="btn" onclick="openSeanceModal()">+ Nouvelle</button>
+    </div>
+    <div id="seances-list"></div>
+    <div id="seances-empty" class="empty">Aucune séance enregistrée pour l'instant.</div>
+  </section>
+
+  <!-- HISTORIQUE -->
+  <section id="view-historique" class="view">
+    <div class="toolbar">
+      <h2>Historique par arme</h2>
+    </div>
+    <div class="hist-select">
+      <label>Sélectionner une arme</label>
+      <select id="hist-arme-select" onchange="renderHistorique()"></select>
+    </div>
+    <div id="hist-list"></div>
+    <div id="hist-empty" class="empty">Sélectionne une arme pour voir son historique.</div>
+  </section>
+
+</main>
+
+<!-- MODAL ARME -->
+<div class="modal-bg" id="modal-arme-bg">
+  <div class="modal">
+    <h3>Nouvelle arme</h3>
+    <label>Photo</label>
+    <div class="photo-upload" id="arme-photo-upload" onclick="document.getElementById('arme-photo-input').click()">
+      <span id="arme-photo-label">Toucher pour ajouter une photo</span>
+      <input type="file" id="arme-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,'arme-photo-upload','arme-photo-label')">
+    </div>
+    <label>Nom de l'arme</label>
+    <input type="text" id="arme-nom" placeholder="Ex : Carabine 308, Glock 17...">
+    <div class="row2">
+      <div>
+        <label>Calibre</label>
+        <input type="text" id="arme-calibre" placeholder="Ex : .308 Win">
+      </div>
+      <div>
+        <label>Catégorie</label>
+        <select id="arme-categorie">
+          <option value="poing">Arme de poing</option>
+          <option value="epaule">Arme d'épaule</option>
+          <option value="longue-distance">Précision / longue distance</option>
+        </select>
+      </div>
+    </div>
+    <label>Réglages actuels (hausse, guidon, optique...)</label>
+    <textarea id="arme-reglages" placeholder="Ex : optique réglée à 100m, 3 clics droite..."></textarea>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal('modal-arme-bg')">Annuler</button>
+      <button class="btn" onclick="saveArme()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SEANCE -->
+<div class="modal-bg" id="modal-seance-bg">
+  <div class="modal">
+    <h3>Nouvelle séance</h3>
+    <div class="row2">
+      <div>
+        <label>Date</label>
+        <input type="date" id="seance-date">
+      </div>
+      <div>
+        <label>Distance</label>
+        <input type="text" id="seance-distance" placeholder="Ex : 100m">
+      </div>
+    </div>
+    <label>Arme utilisée</label>
+    <select id="seance-arme"></select>
+    <label>Munition</label>
+    <input type="text" id="seance-munition" placeholder="Ex : 168gr HPBT">
+    <label>Conditions</label>
+    <input type="text" id="seance-conditions" placeholder="Ex : vent 10km/h, sec, 15°C">
+    <label>Photo de la cible</label>
+    <div class="photo-upload" id="seance-photo-upload" onclick="document.getElementById('seance-photo-input').click()">
+      <span id="seance-photo-label">Toucher pour ajouter une photo</span>
+      <input type="file" id="seance-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,'seance-photo-upload','seance-photo-label')">
+    </div>
+    <label>Notes (groupement, ressenti...)</label>
+    <textarea id="seance-notes" placeholder="Ex : groupement 2cm, léger décalage droite..."></textarea>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal('modal-seance-bg')">Annuler</button>
+      <button class="btn" onclick="saveSeance()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- STOCKAGE ----------
+function loadData(){
+  try{
+    return JSON.parse(localStorage.getItem('pdi_data')) || {armes:[], seances:[]};
+  }catch(e){ return {armes:[], seances:[]}; }
+}
+function saveData(){
+  localStorage.setItem('pdi_data', JSON.stringify(data));
+}
+let data = loadData();
+
+// ---------- NAVIGATION ----------
+document.querySelectorAll('nav button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view==='seances') renderSeances();
+    if(btn.dataset.view==='historique') { populateHistSelect(); renderHistorique(); }
+  });
+});
+
+// ---------- PHOTO PREVIEW (upload générique) ----------
+let pendingArmePhoto = null;
+let pendingSeancePhoto = null;
+function previewPhoto(input, uploadId, labelId){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const dataUrl = e.target.result;
+    if(uploadId==='arme-photo-upload') pendingArmePhoto = dataUrl;
+    if(uploadId==='seance-photo-upload') pendingSeancePhoto = dataUrl;
+    const uploadEl = document.getElementById(uploadId);
+    uploadEl.innerHTML = '<img src="'+dataUrl+'"><span>Photo sélectionnée — toucher pour changer</span>' +
+      '<input type="file" id="'+input.id+'" accept="image/*" style="display:none" onchange="previewPhoto(this,\''+uploadId+'\',\''+labelId+'\')">';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---------- MODALS ----------
+function openArmeModal(){
+  pendingArmePhoto = null;
+  document.getElementById('arme-nom').value='';
+  document.getElementById('arme-calibre').value='';
+  document.getElementById('arme-categorie').value='poing';
+  document.getElementById('arme-reglages').value='';
+  document.getElementById('arme-photo-upload').innerHTML =
+    '<span id="arme-photo-label">Toucher pour ajouter une photo</span>' +
+    '<input type="file" id="arme-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,\'arme-photo-upload\',\'arme-photo-label\')">';
+  document.getElementById('modal-arme-bg').classList.add('active');
+}
+function openSeanceModal(){
+  if(data.armes.length===0){ alert("Ajoute d'abord une arme avant de créer une séance."); return; }
+  pendingSeancePhoto = null;
+  document.getElementById('seance-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('seance-distance').value='';
+  document.getElementById('seance-munition').value='';
+  document.getElementById('seance-conditions').value='';
+  document.getElementById('seance-notes').value='';
+  document.getElementById('seance-photo-upload').innerHTML =
+    '<span id="seance-photo-label">Toucher pour ajouter une photo</span>' +
+    '<input type="file" id="seance-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,\'seance-photo-upload\',\'seance-photo-label\')">';
+  const sel = document.getElementById('seance-arme');
+  sel.innerHTML = data.armes.map(a=>'<option value="'+a.id+'">'+escapeHtml(a.nom)+'</option>').join('');
+  document.getElementById('modal-seance-bg').classList.add('active');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+
+// ---------- SAVE ----------
+function saveArme(){
+  const nom = document.getElementById('arme-nom').value.trim();
+  if(!nom){ alert('Indique un nom pour cette arme.'); return; }
+  data.armes.push({
+    id: 'a_'+Date.now(),
+    nom: nom,
+    calibre: document.getElementById('arme-calibre').value.trim(),
+    categorie: document.getElementById('arme-categorie').value,
+    reglages: document.getElementById('arme-reglages').value.trim(),
+    photo: pendingArmePhoto
+  });
+  saveData();
+  closeModal('modal-arme-bg');
+  renderArmes();
+}
+function saveSeance(){
+  const armeId = document.getElementById('seance-arme').value;
+  data.seances.push({
+    id: 's_'+Date.now(),
+    date: document.getElementById('seance-date').value,
+    armeId: armeId,
+    distance: document.getElementById('seance-distance').value.trim(),
+    munition: document.getElementById('seance-munition').value.trim(),
+    conditions: document.getElementById('seance-conditions').value.trim(),
+    notes: document.getElementById('seance-notes').value.trim(),
+    photo: pendingSeancePhoto
+  });
+  saveData();
+  closeModal('modal-seance-bg');
+  renderSeances();
+}
+
+// ---------- DELETE ----------
+function deleteArme(id){
+  if(!confirm('Supprimer cette arme et toutes ses séances associées ?')) return;
+  data.armes = data.armes.filter(a=>a.id!==id);
+  data.seances = data.seances.filter(s=>s.armeId!==id);
+  saveData();
+  renderArmes();
+}
+function deleteSeance(id){
+  if(!confirm('Supprimer cette séance ?')) return;
+  data.seances = data.seances.filter(s=>s.id!==id);
+  saveData();
+  renderSeances();
+}
+
+// ---------- RENDER ----------
+const catLabels = {poing:'Arme de poing', epaule:"Arme d'épaule", 'longue-distance':'Précision / longue distance'};
+
+function renderArmes(){
+  const grid = document.getElementById('armes-grid');
+  const empty = document.getElementById('armes-empty');
+  if(data.armes.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML = data.armes.map(a=>`
+    <div class="card">
+      <button class="del" onclick="deleteArme('${a.id}')">✕</button>
+      ${a.photo ? '<img class="photo" src="'+a.photo+'">' : '<div class="photo-placeholder">Pas de photo</div>'}
+      <div class="body">
+        <div class="nom">${escapeHtml(a.nom)}</div>
+        <div class="meta">${escapeHtml(a.calibre||'—')} · ${catLabels[a.categorie]}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSeances(){
+  const list = document.getElementById('seances-list');
+  const empty = document.getElementById('seances-empty');
+  const sorted = [...data.seances].sort((a,b)=> b.date.localeCompare(a.date));
+  if(sorted.length===0){ list.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  list.innerHTML = sorted.map(s=>{
+    const arme = data.armes.find(a=>a.id===s.armeId);
+    return `
+    <div class="seance-card">
+      ${s.photo ? '<img src="'+s.photo+'">' : '<div class="noimg">Pas de photo</div>'}
+      <div class="infos">
+        <div class="top">
+          <span class="arme">${arme ? escapeHtml(arme.nom) : 'Arme supprimée'}</span>
+          <span class="date">${formatDate(s.date)}</span>
+        </div>
+        <div class="details">${escapeHtml(s.distance||'—')} ${s.munition ? '· '+escapeHtml(s.munition) : ''} ${s.conditions ? '· '+escapeHtml(s.conditions) : ''}</div>
+        ${s.notes ? '<div class="notes">'+escapeHtml(s.notes)+'</div>' : ''}
+      </div>
+      <button class="del" style="position:static; align-self:flex-start;" onclick="deleteSeance('${s.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function populateHistSelect(){
+  const sel = document.getElementById('hist-arme-select');
+  const current = sel.value;
+  sel.innerHTML = data.armes.map(a=>'<option value="'+a.id+'">'+escapeHtml(a.nom)+'</option>').join('');
+  if(current) sel.value = current;
+}
+
+function renderHistorique(){
+  const sel = document.getElementById('hist-arme-select');
+  const list = document.getElementById('hist-list');
+  const empty = document.getElementById('hist-empty');
+  if(data.armes.length===0 || !sel.value){ list.innerHTML=''; empty.style.display='block'; return; }
+  const armeId = sel.value;
+  const arme = data.armes.find(a=>a.id===armeId);
+  const seances = data.seances.filter(s=>s.armeId===armeId).sort((a,b)=> b.date.localeCompare(a.date));
+  let html = '';
+  if(arme && arme.reglages){
+    html += `<div class="seance-card"><div class="infos"><div class="arme" style="margin-bottom:4px;">Réglages actuels</div><div class="notes">${escapeHtml(arme.reglages)}</div></div></div>`;
+  }
+  if(seances.length===0){
+    empty.style.display='block';
+    empty.textContent = 'Aucune séance enregistrée pour cette arme.';
+    list.innerHTML = html;
+    return;
+  }
+  empty.style.display='none';
+  html += seances.map(s=>`
+    <div class="seance-card">
+      ${s.photo ? '<img src="'+s.photo+'">' : '<div class="noimg">Pas de photo</div>'}
+      <div class="infos">
+        <div class="top">
+          <span class="date">${formatDate(s.date)}</span>
+        </div>
+        <div class="details">${escapeHtml(s.distance||'—')} ${s.munition ? '· '+escapeHtml(s.munition) : ''} ${s.conditions ? '· '+escapeHtml(s.conditions) : ''}</div>
+        ${s.notes ? '<div class="notes">'+escapeHtml(s.notes)+'</div>' : ''}
+      </div>
+    </div>
+  `).join('');
+  list.innerHTML = html;
+}
+
+function formatDate(d){
+  if(!d) return '';
+  const parts = d.split('-');
+  return parts.length===3 ? parts[2]+'/'+parts[1]+'/'+parts[0] : d;
+}
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+// ---------- INIT ----------
+renderArmes();
+renderSeances();
+</script>
+
+</body>
+</html>
